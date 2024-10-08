@@ -1,0 +1,215 @@
+Language: Cpp
+Standard: c++17
+
+ColumnLimit: 120
+IndentWidth: 4
+TabWidth: 4
+ContinuationIndentWidth: 4
+UseTab: Never
+
+AccessModifierOffset: -4
+
+# function(
+#     argument, argument);
+AlignAfterOpenBracket: AlwaysBreak
+
+# function(
+#     argument,
+#     argument);
+AllowAllArgumentsOnNextLine: false
+
+# DO NOT format like this:
+# int aaaa = 12;
+# int b    = 23;
+# int ccc  = 23;
+AlignConsecutiveAssignments: false
+
+# Similar with bit fields
+# XXX: unavailable in v10
+#AlignConsecutiveBitFields: false
+
+# DO NOT format like this
+# int         aaaa = 12;
+# float       b = 23;
+# std::string ccc = 23;
+AlignConsecutiveDeclarations: false
+
+# Neither align the macro
+AlignConsecutiveMacros: false
+
+# Format like this:
+# ------------
+# #define A \
+#  int aaaa; \
+#  int b; \
+#  int dddddddddd;
+AlignEscapedNewlines: false
+
+
+# TODO: example
+AlignOperands: false
+
+# TODO: example
+AlignTrailingComments: true
+
+# DO NOT allow to place arguments on a single next line if they did not fit into max columns
+# XXX: not available in v10
+#AllowAllArgumentsOnNextLine: false;
+
+# true:
+# MyClass::MyClass() :
+#    member0(0), member1(2) {}
+#
+# false:
+# MyClass::MyClass() :
+#     member0(0),
+#     member1(2) {}
+AllowAllConstructorInitializersOnNextLine: false
+
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# while (true) {
+# }
+# while (true) {
+#   continue;
+# }
+AllowShortBlocksOnASingleLine: Never
+
+# TODO: example
+AllowShortCaseLabelsOnASingleLine: false
+
+# XXX: not available in v10
+#AllowShortEnumsOnASingleLine: false
+
+# TODO: example
+AllowShortFunctionsOnASingleLine: Inline  # InlineOnly?
+
+AllowShortIfStatementsOnASingleLine: Never
+
+AllowShortLoopsOnASingleLine: false
+
+AllowShortLambdasOnASingleLine: All  # Inline?  # only if an argument in a function call
+
+AlwaysBreakAfterReturnType: None  # no break unless other rules
+
+AlwaysBreakTemplateDeclarations: MultiLine
+
+BinPackArguments: false
+
+BinPackParameters: false
+
+# XXX: not available in v10
+#BitFieldColonSpacing: After
+
+# BreakBeforeBraces: Attach
+BreakBeforeBraces: Custom
+
+# if BreakBeforeBraces == Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false                 # Or go Qt style?
+  AfterControlStatement: MultiLine  # Never?
+  AfterEnum: false
+  AfterFunction: true               # Qt/CoreGuidelines style
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  # BeforeLambdaBody: false  # Not available in v10
+  # BeforeWhile: true        # Not available in v10
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+BreakBeforeBinaryOperators: None  # Break _after_ operators
+BreakBeforeTernaryOperators: false
+
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+
+BreakStringLiterals: false
+
+CompactNamespaces: false
+FixNamespaceComments: true
+
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+Cpp11BracedListStyle: true
+
+DeriveLineEnding: true
+
+DerivePointerAlignment: false
+
+SortIncludes: false
+IncludeBlocks: Preserve
+
+# XXX: not available in v10
+#IndentCaseBlocks: false
+
+IndentCaseLabels: false
+
+# XXX: not available in v10
+#IndentExternBlock: NoIndent
+
+IndentPPDirectives: None
+
+IndentWrappedFunctionNames: true
+
+# XXX: not available in v10
+#InsertTrailingCommas: None
+
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+MaxEmptyLinesToKeep: 2
+
+NamespaceIndentation: None
+
+#PenaltyBreakAssignment (unsigned)
+#    The penalty for breaking around an assignment operator.
+#PenaltyBreakBeforeFirstCallParameter (unsigned)
+#    The penalty for breaking a function call after call(.
+#PenaltyBreakComment (unsigned)
+#    The penalty for each line break introduced inside a comment.
+#PenaltyBreakFirstLessLess (unsigned)
+#    The penalty for breaking before the first <<.
+#PenaltyBreakString (unsigned)
+#    The penalty for each line break introduced inside a string literal.
+#PenaltyBreakTemplateDeclaration (unsigned)
+#    The penalty for breaking after template declaration.
+#PenaltyExcessCharacter (unsigned)
+#    The penalty for each character outside of the column limit.
+#PenaltyReturnTypeOnItsOwnLine (unsigned)
+#    Penalty for putting the return type of a function onto its own line.
+
+PointerAlignment: Left
+
+# XXX: not available in v10
+#SpaceAroundPointerQualifiers: Default  # Not used when pointer alignment is Left?
+
+ReflowComments: false
+
+SortUsingDeclarations: false
+
+# Spaces: typographic placement
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: false
+SpaceBeforeInheritanceColon: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: false
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: true
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 2
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false

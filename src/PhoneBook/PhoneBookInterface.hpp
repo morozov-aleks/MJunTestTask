@@ -14,13 +14,16 @@
 
 struct Tm_Contact {
     uint32_t m_Id = 0;
-    //TODO
+    std::string m_Name = "";
+    std::string m_Number = "";
 };
 
 enum class En_ResultCode {
     Ok,
     NotFound,
-    //TODO
+    BookEmpty,
+    JsonError,
+    WriteError,
 };
 
 class Tm_PhoneBookInterface {

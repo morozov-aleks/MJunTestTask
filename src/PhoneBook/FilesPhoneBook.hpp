@@ -24,6 +24,7 @@ public:
     En_ResultCode EditContact(const Tm_Contact& Contact) override;
     std::pair<En_ResultCode, std::optional<Tm_Contact>> GetContact(uint32_t Id) override;
     std::pair<En_ResultCode, std::vector<Tm_Contact>> GetAllContacts() override;
+    uint32_t GetNextContactId() override;
 
 private:
     std::string filename;
@@ -36,9 +37,8 @@ private:
     Json::Value SerializeData();
     bool ReadFileData();
     bool WriteFileData();
-    std::optional<Json::ArrayIndex> FindContact(Json::Value& contacts, uint32_t Id) const;
     bool FileDataIsOpen() const;
-    std::optional<bool> RestoreFileData();
+    bool RestoreFileData();
     bool CreateBackup();
 };
 

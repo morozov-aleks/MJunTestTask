@@ -36,7 +36,8 @@ public:
 
     virtual std::pair<En_ResultCode, std::optional<Tm_Contact>> GetContact(uint32_t Id) = 0;
     virtual std::pair<En_ResultCode, std::vector<Tm_Contact>> GetAllContacts() = 0;
+    virtual uint32_t GetNextContactId() = 0;
 };
 
 
-#endif // ADDRESSBOOKINTERFACE_HPP
+#endif  // ADDRESSBOOKINTERFACE_HPP

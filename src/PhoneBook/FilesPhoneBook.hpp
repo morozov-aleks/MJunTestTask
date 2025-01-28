@@ -7,8 +7,13 @@
 #ifndef FILESPHONEBOOK_HPP
 #define FILESPHONEBOOK_HPP
 
+#include <jsoncpp/json/json.h>
 #include <PhoneBook/PhoneBookInterface.hpp>
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <filesystem>
+
 
 class Tm_FilesPhoneBook: public Tm_PhoneBookInterface {
 public:
@@ -19,8 +24,22 @@ public:
     En_ResultCode EditContact(const Tm_Contact& Contact) override;
     std::pair<En_ResultCode, std::optional<Tm_Contact>> GetContact(uint32_t Id) override;
     std::pair<En_ResultCode, std::vector<Tm_Contact>> GetAllContacts() override;
+    uint32_t GetNextContactId() override;
 
-    //TODO
+private:
+    std::string filename;
+    std::string backup_filename;
+    Json::Reader f_reader;
+    Json::StyledStreamWriter f_writer;
+    std::fstream io_file;
+    std::vector<Tm_Contact> contacts;
+    std::vector<uint32_t> released_ids;
+    Json::Value SerializeData();
+    bool ReadFileData();
+    bool WriteFileData();
+    bool FileDataIsOpen() const;
+    bool RestoreFileData();
+    bool CreateBackup();
 };
 
 

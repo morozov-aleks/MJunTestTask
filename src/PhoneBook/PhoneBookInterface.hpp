@@ -14,13 +14,16 @@
 
 struct Tm_Contact {
     uint32_t m_Id = 0;
-    //TODO
+    std::string m_Name = "";
+    std::string m_Number = "";
 };
 
 enum class En_ResultCode {
     Ok,
     NotFound,
-    //TODO
+    BookEmpty,
+    JsonError,
+    WriteError,
 };
 
 class Tm_PhoneBookInterface {
@@ -33,7 +36,8 @@ public:
 
     virtual std::pair<En_ResultCode, std::optional<Tm_Contact>> GetContact(uint32_t Id) = 0;
     virtual std::pair<En_ResultCode, std::vector<Tm_Contact>> GetAllContacts() = 0;
+    virtual uint32_t GetNextContactId() = 0;
 };
 
 
-#endif // ADDRESSBOOKINTERFACE_HPP
+#endif  // ADDRESSBOOKINTERFACE_HPP

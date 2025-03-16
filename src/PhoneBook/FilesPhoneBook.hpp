@@ -17,18 +17,18 @@
 
 class Tm_FilesPhoneBook: public Tm_PhoneBookInterface {
 public:
-    Tm_FilesPhoneBook(const std::string& FileName);
+    Tm_FilesPhoneBook(const std::string& FileName): filename{FileName}, backup_filename{filename + ".backup"}
+    {};
 
-    En_ResultCode AddContact(const Tm_Contact& Contact) override;
+    En_ResultCode AddContact(Tm_Contact& Contact) override;
     En_ResultCode RemoveContact(uint32_t Id) override;
     En_ResultCode EditContact(const Tm_Contact& Contact) override;
     std::pair<En_ResultCode, std::optional<Tm_Contact>> GetContact(uint32_t Id) override;
     std::pair<En_ResultCode, std::vector<Tm_Contact>> GetAllContacts() override;
-    uint32_t GetNextContactId() override;
 
 private:
-    std::string filename;
-    std::string backup_filename;
+    const std::string filename;
+    const std::string backup_filename;
     Json::Reader f_reader;
     Json::StyledStreamWriter f_writer;
     std::fstream io_file;

@@ -39,9 +39,7 @@ void input(std::string& variable)
     try {
         std::getline(std::cin, variable);
     } catch (const std::ios_base::failure& error) {
-        std::cout << "Проблема с потоком ввода" << std::endl
-                  << error.what() << std::endl
-                  << "Программа завершается" << std::endl;
+        std::cout << "Проблема с потоком ввода: " << error.what() << std::endl << "Программа завершается" << std::endl;
         exit(1);
     }
     if (stream_failed()) {
@@ -92,7 +90,7 @@ void repeat_input_output()
 
 void write_error_output()
 {
-    std::cout << "Ошибка записи данных в базу" << std::endl;
+    std::cout << "Ошибка записи данных в базу. Проверьте целостность файла." << std::endl;
 }
 
 int main()
@@ -167,7 +165,6 @@ int main()
                 continue;
             }
             Tm_Contact contact;
-            contact.m_Id = PhoneBook->GetNextContactId();
             contact.m_Name = name;
             contact.m_Number = number;
             En_ResultCode result = PhoneBook->AddContact(contact);

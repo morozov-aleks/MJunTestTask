@@ -8,26 +8,29 @@
 
 Tm_FilesPhoneBook::Tm_FilesPhoneBook(const std::string& FileName)
 {
-    bool result = RestoreFileData();
-    if (result == false) {
-        std::cout << "Невозможно восстановить файл данных. Программа завершается" << std::endl;
-        exit(1);
+}
+
+bool Tm_FilesPhoneBook::Init()
+{
+    if (!RestoreFileData()) {
+        return false;
     }
     if (!std::filesystem::exists(filename)) {
         try {
             io_file.open(filename, std::ios_base::out);
             if (!io_file.is_open()) {
-                std::cout << "Невозможно создать файл контактов" << std::endl;
-                exit(1);
+                return false;
             }
             io_file.close();
         } catch (const std::exception& error) {
-            std::cout << "Ошибка при создании файла контактов: ";
-            std::cout << error.what() << std::endl;
-            exit(1);
+            std::cout << "Ошибка создания файла данных.";
+            return false;
         }
     }
-    ReadFileData();
+    if (!ReadFileData()) {
+        return false;
+    }
+    return true;
 }
 
 En_ResultCode Tm_FilesPhoneBook::AddContact(Tm_Contact& Contact)
@@ -43,8 +46,7 @@ En_ResultCode Tm_FilesPhoneBook::AddContact(Tm_Contact& Contact)
     if (!released_ids.empty() && Contact.m_Id == released_ids.back()) {
         released_ids.pop_back();
     }
-    bool add_result = WriteFileData();
-    if (!add_result) {
+    if (!WriteFileData()) {
         RestoreFileData();
         ReadFileData();
         return En_ResultCode::WriteError;
@@ -61,8 +63,7 @@ En_ResultCode Tm_FilesPhoneBook::RemoveContact(uint32_t Id)
         if (contacts[contact_id].m_Id == Id) {
             contacts.erase(contacts.begin() + contact_id);
             released_ids.push_back(Id);
-            bool result = WriteFileData();
-            if (!result) {
+            if (!WriteFileData()) {
                 RestoreFileData();
                 ReadFileData();
                 return En_ResultCode::WriteError;
@@ -82,8 +83,7 @@ En_ResultCode Tm_FilesPhoneBook::EditContact(const Tm_Contact& Contact)
         if (contact.m_Id == Contact.m_Id) {
             contact.m_Name = Contact.m_Name;
             contact.m_Number = Contact.m_Number;
-            bool add_result = WriteFileData();
-            if (!add_result) {
+            if (!WriteFileData()) {
                 RestoreFileData();
                 ReadFileData();
                 return En_ResultCode::WriteError;
@@ -124,21 +124,31 @@ bool Tm_FilesPhoneBook::ReadFileData()
             return false;
         }
         io_file.seekg(0);
+        Json::Reader f_reader;
         f_reader.parse(io_file, file_data);
     } catch (const std::exception& error) {
-        if (!io_file) {
-            return false;
-        }
+        std::cout << "Ошибка чтения из файла данных." << std::endl;
+        io_file.close();
+        return false;
     }
     if (!file_data.empty()) {
-        Json::Value readed_contacts = file_data.get("contacts", "");
-        Json::Value rel_ids = file_data.get("released_ids", "");
-        for (const Json::Value contact: readed_contacts) {
-            contacts.push_back(
-                Tm_Contact{contact["Id"].asUInt(), contact["Name"].asString(), contact["Number"].asString()});
+        try
+        {
+            Json::Value readed_contacts = file_data.get("contacts", "");
+            Json::Value rel_ids = file_data.get("released_ids", "");
+            for (const Json::Value& contact: readed_contacts) {
+                contacts.push_back(
+                    Tm_Contact{contact["Id"].asUInt(), contact["Name"].asString(), contact["Number"].asString()});
+            }
+            for (const Json::Value id: rel_ids) {
+                released_ids.push_back(id.asUInt());
+            }
         }
-        for (const Json::Value id: rel_ids) {
-            released_ids.push_back(id.asUInt());
+        catch(const std::exception& error)
+        {
+           std::cout << "Ошибка формата контактов." << std::endl;
+           io_file.close();
+           return false;
         }
     }
     io_file.close();
@@ -152,17 +162,20 @@ bool Tm_FilesPhoneBook::WriteFileData()
     }
     try {
         io_file.open(filename, std::ios_base::out);
-        if (!io_file.is_open()) {
+        if(!io_file.is_open()) {
             return false;
         }
         Json::Value data = SerializeData();
+        Json::StyledStreamWriter f_writer;
         f_writer.write(io_file, data);
+        std::filesystem::remove(backup_filename);
+        io_file.close();
     } catch (const std::exception& error) {
-        std::cout << error.what() << std::endl;
+        std::cout << "Ошибка записи в файл данных." << std::endl;
+        std::filesystem::remove(backup_filename);
+        io_file.close();
         return false;
     }
-    std::filesystem::remove(backup_filename);
-    io_file.close();
     return true;
 }
 
@@ -196,6 +209,7 @@ bool Tm_FilesPhoneBook::RestoreFileData()
         std::filesystem::rename(backup_filename, filename);
         return true;
     } catch (const std::filesystem::filesystem_error& error) {
+        std::cout << "Ошибка восстановления из резервного файла данных." << std::endl;
         return false;
     }
 }
@@ -206,6 +220,7 @@ bool Tm_FilesPhoneBook::CreateBackup()
         std::filesystem::copy_file(filename, backup_filename);
         return true;
     } catch (const std::filesystem::filesystem_error& error) {
+        std::cout << "Ошибка создания резервного файла данных." << std::endl;
         return false;
     }
 }

@@ -20,6 +20,7 @@ public:
     Tm_FilesPhoneBook(const std::string& FileName): filename{FileName}, backup_filename{filename + ".backup"}
     {};
 
+    bool Init();
     En_ResultCode AddContact(Tm_Contact& Contact) override;
     En_ResultCode RemoveContact(uint32_t Id) override;
     En_ResultCode EditContact(const Tm_Contact& Contact) override;
@@ -29,15 +30,12 @@ public:
 private:
     const std::string filename;
     const std::string backup_filename;
-    Json::Reader f_reader;
-    Json::StyledStreamWriter f_writer;
     std::fstream io_file;
     std::vector<Tm_Contact> contacts;
     std::vector<uint32_t> released_ids;
     Json::Value SerializeData();
     bool ReadFileData();
     bool WriteFileData();
-    bool FileDataIsOpen() const;
     bool RestoreFileData();
     bool CreateBackup();
 };

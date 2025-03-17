@@ -60,17 +60,17 @@ void get_choice_prompt()
 
 void get_contact_prompt(const std::string field)
 {
-    std::cout << "Введите " << field << " контакта" << std::endl;
+    std::cout << "Введите " << field << " контакта." << std::endl;
 }
 
 void book_empty_output()
 {
-    std::cout << "Книга контактов пуста" << std::endl;
+    std::cout << "Книга контактов пуста." << std::endl;
 }
 
 void contact_not_found_output()
 {
-    std::cout << "Контакт не найден" << std::endl;
+    std::cout << "Контакт не найден." << std::endl;
 }
 
 void contact_field_cant_be_empty(const std::string& field)
@@ -80,22 +80,26 @@ void contact_field_cant_be_empty(const std::string& field)
 
 void unexpected_error_output()
 {
-    std::cout << "Неожиданная ошибка, попробуйте снова" << std::endl;
+    std::cout << "Неожиданная ошибка, попробуйте снова." << std::endl;
 }
 
 void repeat_input_output()
 {
-    std::cout << "Попробуйте ввести снова" << std::endl;
+    std::cout << "Попробуйте ввести снова." << std::endl;
 }
 
 void write_error_output()
 {
-    std::cout << "Ошибка записи данных в базу. Проверьте целостность файла." << std::endl;
+    std::cout << "Проверьте целостность файла данных." << std::endl;
 }
 
 int main()
 {
     auto PhoneBook = CreatePhoneBook("./book.json");
+    if (!PhoneBook->Init()) {
+        std::cout << "Ошибка инициализации. Проверьте целостность данных." << std::endl;
+        exit(1);
+    }
     std::optional<uint32_t> choice;
     std::cin.exceptions(std::cin.exceptions() | std::ios_base::badbit);
     while (true) {

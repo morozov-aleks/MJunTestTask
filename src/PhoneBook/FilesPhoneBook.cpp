@@ -6,10 +6,6 @@
 
 #include "FilesPhoneBook.hpp"
 
-Tm_FilesPhoneBook::Tm_FilesPhoneBook(const std::string& FileName)
-{
-}
-
 bool Tm_FilesPhoneBook::Init()
 {
     if (!RestoreFileData()) {
@@ -99,7 +95,7 @@ std::pair<En_ResultCode, std::optional<Tm_Contact>> Tm_FilesPhoneBook::GetContac
     if (contacts.empty()) {
         return {En_ResultCode::BookEmpty, std::nullopt};
     }
-    for (const Tm_Contact contact: contacts) {
+    for (const Tm_Contact& contact: contacts) {
         if (contact.m_Id == Id) {
             return {En_ResultCode::Ok, contact};
         }
@@ -140,7 +136,7 @@ bool Tm_FilesPhoneBook::ReadFileData()
                 contacts.push_back(
                     Tm_Contact{contact["Id"].asUInt(), contact["Name"].asString(), contact["Number"].asString()});
             }
-            for (const Json::Value id: rel_ids) {
+            for (const Json::Value& id: rel_ids) {
                 released_ids.push_back(id.asUInt());
             }
         }

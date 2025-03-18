@@ -58,7 +58,7 @@ void get_choice_prompt()
                  "6. Выйти из программы.\n";
 }
 
-void get_contact_prompt(const std::string field)
+void get_contact_prompt(const std::string& field)
 {
     std::cout << "Введите " << field << " контакта." << std::endl;
 }
@@ -98,7 +98,7 @@ int main()
     auto PhoneBook = CreatePhoneBook("./book.json");
     if (!PhoneBook->Init()) {
         std::cout << "Ошибка инициализации. Проверьте целостность данных." << std::endl;
-        exit(1);
+        return 1;
     }
     std::optional<uint32_t> choice;
     std::cin.exceptions(std::cin.exceptions() | std::ios_base::badbit);
@@ -251,6 +251,9 @@ int main()
                 break;
             case En_ResultCode::WriteError:
                 write_error_output();
+            default:
+                unexpected_error_output();
+                break;
             }
         } break;
         case 6:

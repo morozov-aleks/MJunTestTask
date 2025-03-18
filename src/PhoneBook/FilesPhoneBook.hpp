@@ -20,7 +20,7 @@ public:
     Tm_FilesPhoneBook(const std::string& FileName): filename{FileName}, backup_filename{filename + ".backup"}
     {};
 
-    bool Init();
+    bool Init() override;
     En_ResultCode AddContact(Tm_Contact& Contact) override;
     En_ResultCode RemoveContact(uint32_t Id) override;
     En_ResultCode EditContact(const Tm_Contact& Contact) override;

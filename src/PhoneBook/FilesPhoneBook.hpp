@@ -7,20 +7,37 @@
 #ifndef FILESPHONEBOOK_HPP
 #define FILESPHONEBOOK_HPP
 
+#include <jsoncpp/json/json.h>
 #include <PhoneBook/PhoneBookInterface.hpp>
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <filesystem>
+
 
 class Tm_FilesPhoneBook: public Tm_PhoneBookInterface {
 public:
-    Tm_FilesPhoneBook(const std::string& FileName);
+    Tm_FilesPhoneBook(const std::string& FileName): filename{FileName}, backup_filename{filename + ".backup"}
+    {};
 
-    En_ResultCode AddContact(const Tm_Contact& Contact) override;
+    bool Init() override;
+    En_ResultCode AddContact(Tm_Contact& Contact) override;
     En_ResultCode RemoveContact(uint32_t Id) override;
     En_ResultCode EditContact(const Tm_Contact& Contact) override;
     std::pair<En_ResultCode, std::optional<Tm_Contact>> GetContact(uint32_t Id) override;
     std::pair<En_ResultCode, std::vector<Tm_Contact>> GetAllContacts() override;
 
-    //TODO
+private:
+    const std::string filename;
+    const std::string backup_filename;
+    std::fstream io_file;
+    std::vector<Tm_Contact> contacts;
+    std::vector<uint32_t> released_ids;
+    Json::Value SerializeData();
+    bool ReadFileData();
+    bool WriteFileData();
+    bool RestoreFileData();
+    bool CreateBackup();
 };
 
 

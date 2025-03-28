@@ -14,26 +14,31 @@
 
 struct Tm_Contact {
     uint32_t m_Id = 0;
-    //TODO
+    std::string m_Name = "";
+    std::string m_Number = "";
 };
 
 enum class En_ResultCode {
     Ok,
     NotFound,
-    //TODO
+    BookEmpty,
+    JsonError,
+    WriteError,
+    ReadError,
 };
 
 class Tm_PhoneBookInterface {
 public:
     virtual ~Tm_PhoneBookInterface() = default;
 
-    virtual En_ResultCode AddContact(const Tm_Contact& Contact) = 0;
+    virtual En_ResultCode AddContact(Tm_Contact& Contact) = 0;
     virtual En_ResultCode RemoveContact(uint32_t Id) = 0;
     virtual En_ResultCode EditContact(const Tm_Contact& Contact) = 0;
 
     virtual std::pair<En_ResultCode, std::optional<Tm_Contact>> GetContact(uint32_t Id) = 0;
     virtual std::pair<En_ResultCode, std::vector<Tm_Contact>> GetAllContacts() = 0;
+    virtual bool Init() = 0;
 };
 
 
-#endif // ADDRESSBOOKINTERFACE_HPP
+#endif  // ADDRESSBOOKINTERFACE_HPP

@@ -7,19 +7,19 @@
 #ifndef FILESPHONEBOOK_HPP
 #define FILESPHONEBOOK_HPP
 
-#include <ATE/Concept/Primitive.h>
 #include <ATE/Concept/PrimFSM.h>
 #include <ATE/Concept/PrimOutput.h>
+#include <ATE/Architecture/DirectIO_Machine.h>
+
 #include <jsoncpp/json/json.h>
-#include <PhoneBookInterface.hpp>
-#include <PB_Primitives.hpp>
+#include "PhoneBookInterface.hpp"
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <filesystem>
 
 
-class Tm_FilesPhoneBook: public Tm_PrimFSM, public virtual Tm_PrimOutput, public Tm_PhoneBookInterface {
+class Tm_FilesPhoneBook: public Tm_PhoneBookInterface, public Tm_PrimFSM, public virtual Tm_PrimOutput, public Tm_DirectIO_Machine<Tm_Primitive *> {
 public:
     Tm_FilesPhoneBook(const std::string& FileName): filename{FileName}, backup_filename{filename + ".backup"}, m_pOutput(0)
     {
@@ -37,9 +37,9 @@ public:
 
 private:
     enum { ST_ACTIVE };
-    Tm_PrimOutput* m_pOutput;
     const std::string filename;
     const std::string backup_filename;
+    Tm_PrimOutput* m_pOutput;
     std::fstream io_file;
     std::vector<Tm_Contact> contacts;
     std::vector<uint32_t> released_ids;

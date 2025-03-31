@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 3.1)
-project(JunTestTask)
+project(MJunTestTask)
 
-set(CMAKE_CXX_STANDARD 17)
+find_package(ProteiCMakeModules)
+protei_init(CXX_STANDARD c++17)
 
 find_package(jsoncpp REQUIRED)
 
 file(GLOB_RECURSE SOURCES src/*)
 
-add_executable(JunTestTask ${SOURCES})
-
-target_link_libraries(JunTestTask jsoncpp_lib)
-target_include_directories(JunTestTask PRIVATE src)
+protei_add_target(MJunTestTask EXECUTABLE
+        SOURCES ${SOURCES}
+        HEADERS src
+        DEPENDS PSC::psc ATE::BaseLogic ATE::Common jsoncpp_lib)

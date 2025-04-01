@@ -1,9 +1,13 @@
 #include <iostream>
+#include <ATE/Architecture/PrimSyncDynaQueue.h>
 #include <PhoneBook/FilesPhoneBook.hpp>
+#include <PhoneBook/PB_Actor.hpp>
 
-std::shared_ptr<Tm_PhoneBookInterface> CreatePhoneBook(const std::string& FileName)
+std::shared_ptr<Tm_PB_Actor> CreatePhoneBookActor(const std::string& FileName, Tm_PrimOutput* pClientOutput)
 {
-    return std::make_shared<Tm_FilesPhoneBook>(FileName);
+    auto book = std::make_shared<Tm_PB_Actor>(FileName);
+    book->Link(pClientOutput);
+    return book;
 }
 
 
@@ -95,19 +99,26 @@ void write_error_output()
 
 int main()
 {
-    auto PhoneBook = CreatePhoneBook("./book.json");
-    if (!PhoneBook->Init()) {
+    std::cin.exceptions(std::cin.exceptions() | std::ios_base::badbit);
+    new Tm_Trace("./Trace.cfg");
+    Tm_PrimSyncDynaQueue BackChannel;
+    auto PhoneBookActor = CreatePhoneBookActor("./book.json", &BackChannel);
+    if (!PhoneBookActor->Init_Actor()) {
         std::cout << "Ошибка инициализации. Проверьте целостность данных." << std::endl;
         return 1;
     }
+
     std::optional<uint32_t> choice;
-    std::cin.exceptions(std::cin.exceptions() | std::ios_base::badbit);
     while (true) {
         get_choice_prompt();
         input(choice);
         switch (*choice) {
         case 1: {
-            std::pair<En_ResultCode, std::vector<Tm_Contact>> result = PhoneBook->GetAllContacts();
+            std::pair<En_ResultCode, std::vector<Tm_Contact>> result;
+            PhoneBookActor->Put(new Pr_GET_ALL_CONTACTS_REQ());
+            if (auto Resp = dynamic_cast<Pr_GET_ALL_CONTACTS_RESP*>(BackChannel.Get())) {
+                result = std::move(Resp->m_Result);
+            }
             switch (result.first) {
             case En_ResultCode::Ok:
                 std::cout << "Книга контактов содержит:" << std::endl;
@@ -133,7 +144,11 @@ int main()
                 repeat_input_output();
                 continue;
             }
-            std::pair<En_ResultCode, std::optional<Tm_Contact>> result = PhoneBook->GetContact(*id);
+            std::pair<En_ResultCode, std::optional<Tm_Contact>> result;
+            PhoneBookActor->Put(new Pr_GET_CONTACT_REQ(*id));
+            if (auto Resp = dynamic_cast<Pr_GET_CONTACT_RESP*>(BackChannel.Get())) {
+                result = std::move(Resp->m_Result);
+            }
             switch (result.first) {
             case En_ResultCode::Ok:
                 std::cout << "Найден контакт:" << std::endl;
@@ -171,11 +186,16 @@ int main()
             Tm_Contact contact;
             contact.m_Name = name;
             contact.m_Number = number;
-            En_ResultCode result = PhoneBook->AddContact(contact);
-            switch (result) {
-            case En_ResultCode::Ok:
+            En_ResultCode result;
+            PhoneBookActor->Put(new Pr_ADD_CONTACT_REQ(contact));
+            if (dynamic_cast<Pr_ADD_CONTACT_CONF*>(BackChannel.Get())) {
                 std::cout << "Контакт добавлен" << std::endl;
-                break;
+                continue;
+            }
+            if (auto Rej = dynamic_cast<Pr_ADD_CONTACT_REJ*>(BackChannel.Get())) {
+                result = std::move(Rej->m_Result);
+            }
+            switch (result) {
             case En_ResultCode::WriteError:
                 write_error_output();
                 break;
@@ -211,16 +231,21 @@ int main()
             contact.m_Id = *id;
             contact.m_Name = name;
             contact.m_Number = number;
-            En_ResultCode result = PhoneBook->EditContact(contact);
+            En_ResultCode result;
+            PhoneBookActor->Put(new Pr_EDIT_CONTACT_REQ(contact));
+            if (dynamic_cast<Pr_EDIT_CONTACT_CONF*>(BackChannel.Get())) {
+                std::cout << "Контакт изменен" << std::endl;
+                continue;
+            }
+            if (auto Rej = dynamic_cast<Pr_EDIT_CONTACT_REJ*>(BackChannel.Get())) {
+                result = std::move(Rej->m_Result);
+            }
             switch (result) {
             case En_ResultCode::BookEmpty:
                 book_empty_output();
                 break;
             case En_ResultCode::NotFound:
                 contact_not_found_output();
-                break;
-            case En_ResultCode::Ok:
-                std::cout << "Контакт изменен" << std::endl;
                 break;
             case En_ResultCode::WriteError:
                 write_error_output();
@@ -238,16 +263,21 @@ int main()
                 repeat_input_output();
                 continue;
             }
-            En_ResultCode result = PhoneBook->RemoveContact(*id);
+            En_ResultCode result;
+            PhoneBookActor->Put(new Pr_REMOVE_CONTACT_REQ(*id));
+            if (dynamic_cast<Pr_REMOVE_CONTACT_CONF*>(BackChannel.Get())) {
+                std::cout << "Контакт удален" << std::endl;
+                continue;
+            }
+            if (auto Rej = dynamic_cast<Pr_EDIT_CONTACT_REJ*>(BackChannel.Get())) {
+                result = std::move(Rej->m_Result);
+            }
             switch (result) {
             case En_ResultCode::BookEmpty:
                 book_empty_output();
                 break;
             case En_ResultCode::NotFound:
                 contact_not_found_output();
-                break;
-            case En_ResultCode::Ok:
-                std::cout << "Контакт удален" << std::endl;
                 break;
             case En_ResultCode::WriteError:
                 write_error_output();
